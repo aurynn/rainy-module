@@ -9,11 +9,11 @@
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON="<%= installpath %>/rainy.sh"
-DAEMON_OPTS="-c /etc/rainy/settings.conf"
+DAEMON="<%= installed %>/rainy.sh"
+DAEMON_OPTS="-c <%= configfile %>"
 NAME="rainy"
 DESC="rainy (tomboy sync server)"
-PIDFILE="/var/run/rainy/${NAME}.pid"
+PIDFILE="<%=piddir%>/${NAME}.pid"
 
 test -x $DAEMON || exit 0
 
@@ -21,22 +21,10 @@ test -x $DAEMON || exit 0
 
 . /lib/lsb/init-functions
 
-is_true() {
-    if [ "x$1" = "xtrue" -o "x$1" = "xyes" -o "x$1" = "x0" ] ; then
-        return 0
-    else
-        return 1
-    fi
-}
 
 start_rainy() {
-    if is_true "$START" ; then
     start-stop-daemon --background --make-pidfile --start --quiet --pidfile $PIDFILE \
-        --startas $DAEMON -- $DAEMON_OPTS
-    else
-    echo ""
-    echo "rainy not configured to start, please edit /etc/default/puppet to enable"
-    fi
+        -c rainy --startas $DAEMON -- $DAEMON_OPTS
 }
 
 stop_rainy() {

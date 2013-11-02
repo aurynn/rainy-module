@@ -1,3 +1,6 @@
+# THIS FILE IS MANAGED BY PUPPET.
+#
+#
 # This file is basically JSON but allowes comment lines that
 # start with the # character. Additionally, keys need not to be
 # enclosed by quotes.
@@ -6,33 +9,15 @@
 
 # Rainy configuration
 {
-    # the Url, containing IP address or hostname and port on which to listen
-    # if the wildcard "*" is used, we listen on all addresses
-    #
-    # If https is used, SSL certs will be created
-    # You can also use --cert/--pvk to specify your own generated
-    # certs created by the 'makecert' tool
-    #
-    # Note: The port is not optional but must be present for every url!
-    # Only listen on the internal IP; don't listen on external
-    # interfaces.
-    #
-    ListenUrl: "http<%= ssl ? 's' : '' %>://<%= interface %>:<%= port %>"
+    ListenUrl: "http<%= ssl ? 's' : '' %>://<%= interface %>:<%= port %>/",
     # ListenUrl: "https://10.1.1.22:8080/",
 
     # the path used for data storage (notes, metadata, ssl certs),
     # must be writable.
-    # if empty, the current directory is used
-    DataPath: "/opt/rainy/rainy-0.5.0/data/",
+    DataPath: "<%= datapath %>",
 
-    # the backend to use, if empty the sqlite backend
-    # is used.
-    #
-    # The sqlite backend writes everything, notes and metadata,
-    # into a single sqlite3 database file. Recommended for
-    # medium sized installations with hundreds of users.
-    Backend: "sqlite",
-    Backend : <%= backend %>
+    
+    Backend : "<%= backend %>",
 
     # PostgreSQL backend, use for maximum DB loads
     #Backend: "postgre",
@@ -46,8 +31,8 @@
     },
 
     # password for the administration web interface
-    # AdminPassword: "password",
-    AdminPassword: <%= admin_password %>
+    
+    AdminPassword: "<%= admin_password %>",
 
     # Multi-user configuration
     #
