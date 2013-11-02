@@ -1,0 +1,82 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          rainy
+# Required-Start:    $network $named $remote_fs $syslog
+# Required-Stop:     $network $named $remote_fs $syslog
+# Should-Start:      rainy
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON="<%= installpath %>/rainy.sh"
+DAEMON_OPTS="-c /etc/rainy/settings.conf"
+NAME="rainy"
+DESC="rainy (tomboy sync server)"
+PIDFILE="/var/run/rainy/${NAME}.pid"
+
+test -x $DAEMON || exit 0
+
+# [ -r /etc/default/rainy ] && . /etc/default/rainy
+
+. /lib/lsb/init-functions
+
+is_true() {
+    if [ "x$1" = "xtrue" -o "x$1" = "xyes" -o "x$1" = "x0" ] ; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+start_rainy() {
+    if is_true "$START" ; then
+    start-stop-daemon --background --make-pidfile --start --quiet --pidfile $PIDFILE \
+        --startas $DAEMON -- $DAEMON_OPTS
+    else
+    echo ""
+    echo "rainy not configured to start, please edit /etc/default/puppet to enable"
+    fi
+}
+
+stop_rainy() {
+    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
+}
+
+status_rainy() {
+    status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}"
+}
+
+case "$1" in
+    start)
+    log_begin_msg "Starting $DESC"
+    start_rainy
+    log_end_msg $?
+    ;;
+    stop)
+    log_begin_msg "Stopping $DESC"
+    stop_rainy
+    log_end_msg $?
+    ;;
+    reload)
+        log_begin_msg "Reloading $DESC"
+        stop_rainy
+        sleep 1
+        start_rainy
+        log_end_msg $?
+        ;;
+    status)
+        status_rainy
+    ;;
+    restart|force-reload)
+    log_begin_msg "Restarting $DESC"
+    stop_rainy
+    sleep 1
+    start_rainy
+    log_end_msg $?
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|status|restart|force-reload|reload}" >&2
+    exit 1
+    ;;
+esac
