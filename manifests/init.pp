@@ -31,7 +31,8 @@ class rainy (
     # Let's download the file.
     exec {"fetch rainy archive":
         command => "/usr/bin/curl http://rainy.notesync.org/release/rainy-$version.zip > /tmp/rainy.zip",
-        creates => "/tmp/rainy.zip"
+        creates => "/tmp/rainy.zip",
+        require => Package["curl"]
     }
     exec {"unzip rainy archive":
         command => "/usr/bin/unzip /tmp/rainy.zip -d $installpath",
