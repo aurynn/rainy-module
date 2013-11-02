@@ -106,7 +106,7 @@ class rainy (
             File["/etc/init.d/rainy"],
             Exec["unzip rainy archive"],
             File[$piddir],
-            File["$installed/rainy.sh"]
+            File["$installed/rainy.sh"],
             File["/home/rainy"]
         ]
     }
